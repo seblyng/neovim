@@ -196,8 +196,13 @@ methods['textDocument/hover'] = function(params, callback)
 
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
   local lnum = params.position.line + 1
-  local commit = lines[lnum]:match('^[<>] (%x+) │') or lines[lnum]:match('^Revision.*:%s+(%x+)')
-  local tag = lines[lnum]:match('^• (.+)$')
+  local line = lines[lnum]
+  if params.position.character >= #line then
+    return
+  end
+
+  local commit = line:match('^[<>] (%x+) │') or line:match('^Revision.*:%s+(%x+)')
+  local tag = line:match('^• (.+)$')
   if commit == nil and tag == nil then
     return
   end
